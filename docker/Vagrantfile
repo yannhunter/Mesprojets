@@ -1,0 +1,24 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+# To enable zsh, please set ENABLE_ZSH env var to "true" before launching vagrant up 
+#   + On windows => $env:ENABLE_ZSH="true"
+#   + On Linux  => export ENABLE_ZSH="true"
+
+Vagrant.configure("2") do |config|
+  config.vm.define "docker" do |docker|
+    docker.vm.box = "geerlingguy/centos7"
+    docker.vm.box_download_insecure=true
+    docker.vm.network "public_network", ip: "10.0.0.10"
+    docker.vm.hostname = "docker"
+    docker.vm.provider "virtualbox" do |v|
+      v.name = "docker"
+      v.memory = 3056
+      v.cpus = 2
+    end
+    docker.vm.provision :shell do |shell|
+      shell.path = "install_docker.sh"
+      shell.env = { 'ENABLE_ZSH' => ENV['ENABLE_ZSH'] }
+    end
+    docker.vm.synced_folder "mini_projet/","/home/vagrant"
+  end
+end
